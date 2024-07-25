@@ -27,9 +27,10 @@ export const OPENBOOK_V2_PROGRAM_ID = {
 };
 
 export const MANGO_V4_ID = {
-  testnet: new PublicKey('4MangoMjqJ2firMokCjjGgoK8d4MXcrgL7XJaL3w6fVg'),
-  devnet: new PublicKey('4MangoMjqJ2firMokCjjGgoK8d4MXcrgL7XJaL3w6fVg'),
-  'mainnet-beta': new PublicKey('4MangoMjqJ2firMokCjjGgoK8d4MXcrgL7XJaL3w6fVg'),
+  testnet: new PublicKey('8AHhgx8bNF4oejgfUzN6A7ZN1CPrh8NMsgnrcDiNgUiZ'),
+  devnet: new PublicKey('8AHhgx8bNF4oejgfUzN6A7ZN1CPrh8NMsgnrcDiNgUiZ'),
+  'mainnet-beta': new PublicKey('8AHhgx8bNF4oejgfUzN6A7ZN1CPrh8NMsgnrcDiNgUiZ'), // TODO: change
+  // 'mainnet-beta': new PublicKey('4MangoMjqJ2firMokCjjGgoK8d4MXcrgL7XJaL3w6fVg'), // TODO: change
 };
 
 export const MANGO_V4_MAIN_GROUP = new PublicKey(
@@ -37,7 +38,7 @@ export const MANGO_V4_MAIN_GROUP = new PublicKey(
 );
 
 export const USDC_MINT = new PublicKey(
-  'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  '4dcRteBQhtSVewgUEEvSFRjhRZmWohjAAE5VzvT8if8f',
 );
 export const MAX_RECENT_PRIORITY_FEE_ACCOUNTS = 128;
 
