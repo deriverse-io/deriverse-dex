@@ -1,13 +1,8 @@
 {
-  "name": "@blockworks-foundation/mango-v4",
-  "version": "0.31.2",
-  "description": "Typescript Client for mango-v4 program.",
-  "repository": "https://github.com/blockworks-foundation/mango-v4",
-  "author": {
-    "name": "Blockworks Foundation",
-    "email": "hello@blockworks.foundation",
-    "url": "https://blockworks.foundation"
-  },
+  "name": "@deriverse/sdk",
+  "version": "0.0.17",
+  "description": "Typescript Client for deriverse program.",
+  "repository": "https://github.com/deriverse-io/deriverse-dex",
   "sideEffects": false,
   "main": "./dist/cjs/src/index.js",
   "module": "./dist/esm/src/index.js",
@@ -64,7 +59,7 @@
   "dependencies": {
     "@blockworks-foundation/mango-v4-settings": "0.14.24",
     "@blockworks-foundation/mangolana": "0.0.17",
-    "@coral-xyz/anchor": "^0.28.1-beta.2",
+    "@coral-xyz/anchor": "0.29.0",
     "@project-serum/serum": "0.13.65",
     "@pythnetwork/client": "~2.14.0",
     "@solana/spl-token": "0.3.7",
@@ -75,7 +70,8 @@
     "binance-api-node": "^0.12.0",
     "bs58": "^5.0.0",
     "cross-fetch": "^3.1.5",
-    "dotenv": "^16.0.3",
+    "decimal.js": "^10.4.3",
+    "dotenv": "^16.4.5",
     "fast-copy": "^3.0.1",
     "lodash": "^4.17.21",
     "node-kraken-api": "^2.2.2"

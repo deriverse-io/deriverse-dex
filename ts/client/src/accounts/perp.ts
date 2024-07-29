@@ -33,6 +33,20 @@ export type ParsedFillEvent = Modify<
   }
 >;
 
+export type IPerpPositionUi = {
+  basePosition: number;
+  floorBasePosition: number;
+  isLong: boolean;
+  avgEntryPrice: number;
+  unsettledPnl: number;
+  totalPnl: number;
+  unrealizedPnl: number;
+  realizedPnl: number;
+  positionFunding: number;
+  roe: number;
+  estLiqPrice: number | null;
+};
+
 export class PerpMarket {
   public name: string;
   public oracleConfig: OracleConfig;
@@ -850,6 +864,7 @@ export class BookSide {
       (client.program as any)._coder.types.typeLayouts
         .get('LeafNode')
         .decode(Buffer.from([BookSide.LEAF_NODE_TAG].concat(data))),
+      // .decode(Buffer.from(data)),
     );
   }
 }

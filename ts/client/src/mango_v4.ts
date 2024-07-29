@@ -11302,7 +11302,7 @@ export type MangoV4 = {
             "name": "ImmediateOrCancel",
             "fields": [
               {
-                "name": "price_lots",
+                "name": "priceLots",
                 "type": "i64"
               }
             ]
@@ -11311,11 +11311,11 @@ export type MangoV4 = {
             "name": "Fixed",
             "fields": [
               {
-                "name": "price_lots",
+                "name": "priceLots",
                 "type": "i64"
               },
               {
-                "name": "order_type",
+                "name": "orderType",
                 "type": {
                   "defined": "PostOrderType"
                 }
@@ -11326,21 +11326,21 @@ export type MangoV4 = {
             "name": "OraclePegged",
             "fields": [
               {
-                "name": "price_offset_lots",
+                "name": "priceOffsetLots",
                 "type": "i64"
               },
               {
-                "name": "order_type",
+                "name": "orderType",
                 "type": {
                   "defined": "PostOrderType"
                 }
               },
               {
-                "name": "peg_limit",
+                "name": "pegLimit",
                 "type": "i64"
               },
               {
-                "name": "max_oracle_staleness_slots",
+                "name": "maxOracleStalenessSlots",
                 "type": "i32"
               }
             ]
@@ -11425,6 +11425,41 @@ export type MangoV4 = {
             "name": "LinearAuction"
           }
         ]
+      }
+    },
+    {
+      "name": "TokenIndex",
+      "type": {
+        "kind": "alias",
+        "value": "u16"
+      }
+    },
+    {
+      "name": "OpenbookV2MarketIndex",
+      "type": {
+        "kind": "alias",
+        "value": "u16"
+      }
+    },
+    {
+      "name": "NodeHandle",
+      "type": {
+        "kind": "alias",
+        "value": "u32"
+      }
+    },
+    {
+      "name": "PerpMarketIndex",
+      "type": {
+        "kind": "alias",
+        "value": "u16"
+      }
+    },
+    {
+      "name": "Serum3MarketIndex",
+      "type": {
+        "kind": "alias",
+        "value": "u16"
       }
     }
   ],
@@ -25755,7 +25790,7 @@ export const IDL: MangoV4 = {
             "name": "ImmediateOrCancel",
             "fields": [
               {
-                "name": "price_lots",
+                "name": "priceLots",
                 "type": "i64"
               }
             ]
@@ -25764,11 +25799,11 @@ export const IDL: MangoV4 = {
             "name": "Fixed",
             "fields": [
               {
-                "name": "price_lots",
+                "name": "priceLots",
                 "type": "i64"
               },
               {
-                "name": "order_type",
+                "name": "orderType",
                 "type": {
                   "defined": "PostOrderType"
                 }
@@ -25779,21 +25814,21 @@ export const IDL: MangoV4 = {
             "name": "OraclePegged",
             "fields": [
               {
-                "name": "price_offset_lots",
+                "name": "priceOffsetLots",
                 "type": "i64"
               },
               {
-                "name": "order_type",
+                "name": "orderType",
                 "type": {
                   "defined": "PostOrderType"
                 }
               },
               {
-                "name": "peg_limit",
+                "name": "pegLimit",
                 "type": "i64"
               },
               {
-                "name": "max_oracle_staleness_slots",
+                "name": "maxOracleStalenessSlots",
                 "type": "i32"
               }
             ]
@@ -25878,6 +25913,41 @@ export const IDL: MangoV4 = {
             "name": "LinearAuction"
           }
         ]
+      }
+    },
+    {
+      "name": "TokenIndex",
+      "type": {
+        "kind": "alias",
+        "value": "u16"
+      }
+    },
+    {
+      "name": "OpenbookV2MarketIndex",
+      "type": {
+        "kind": "alias",
+        "value": "u16"
+      }
+    },
+    {
+      "name": "NodeHandle",
+      "type": {
+        "kind": "alias",
+        "value": "u32"
+      }
+    },
+    {
+      "name": "PerpMarketIndex",
+      "type": {
+        "kind": "alias",
+        "value": "u16"
+      }
+    },
+    {
+      "name": "Serum3MarketIndex",
+      "type": {
+        "kind": "alias",
+        "value": "u16"
       }
     }
   ],

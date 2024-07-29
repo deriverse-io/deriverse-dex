@@ -24,8 +24,15 @@ import { MangoSignatureStatus } from '../utils/rpc';
 import { Bank, TokenIndex } from './bank';
 import { Group } from './group';
 import { HealthCache } from './healthCache';
-import { PerpMarket, PerpMarketIndex, PerpOrder, PerpOrderSide } from './perp';
+import {
+  IPerpPositionUi,
+  PerpMarket,
+  PerpMarketIndex,
+  PerpOrder,
+  PerpOrderSide,
+} from './perp';
 import { MarketIndex, Serum3Side } from './serum3';
+import { floorToDecimal, getDecimalCount } from '../utils/decimals';
 export class MangoAccount {
   public name: string;
   public tokens: TokenPosition[];
@@ -1206,6 +1213,24 @@ export class MangoAccount {
     return toUiDecimalsForQuote(this.getMaxFeesBuyback(group));
   }
 
+  public getPerpPositionsUi(group: Group): IPerpPositionUi[] {
+    return this.perps
+      .filter((perp) => perp.marketIndex !== 65535)
+      .map((perp) => {
+        const perpMarket = group.getPerpMarketByMarketIndex(perp.marketIndex);
+        let estLiqPrice;
+        try {
+          estLiqPrice = perp.getLiquidationPriceUi(group, this);
+        } catch (e) {
+          estLiqPrice = null;
+        }
+        return {
+          ...perp.getPositionUi(perpMarket),
+          estLiqPrice,
+        };
+      });
+  }
+
   toString(group?: Group, onlyTokens = false): string {
     let res = 'MangoAccount';
     res = res + '\n pk: ' + this.publicKey.toString();
@@ -1885,6 +1910,40 @@ export class PerpPosition {
 
   public getRealizedPnlUi(): number {
     return toUiDecimalsForQuote(this.realizedPnlForPositionNative);
+  }
+
+  public getPositionUi(perpMarket: PerpMarket): IPerpPositionUi {
+    if (perpMarket.perpMarketIndex === 65535) {
+      throw new Error('Invalid Index');
+    }
+    const basePosition = this.getBasePositionUi(perpMarket);
+    const floorBasePosition = floorToDecimal(
+      basePosition,
+      getDecimalCount(perpMarket.minOrderSize),
+    ).toNumber();
+    const isLong = basePosition > 0;
+    const avgEntryPrice = this.getAverageEntryPriceUi(perpMarket);
+    const unsettledPnl = this.getUnsettledPnlUi(perpMarket);
+    const totalPnl = this.cumulativePnlOverPositionLifetimeUi(perpMarket);
+    const unrealizedPnl = this.getUnRealizedPnlUi(perpMarket);
+    const realizedPnl = this.getRealizedPnlUi();
+    const positionFunding = this.getCumulativeFundingUi(perpMarket);
+    const roe =
+      (unrealizedPnl / (Math.abs(basePosition) * avgEntryPrice)) * 100;
+
+    return {
+      basePosition,
+      floorBasePosition,
+      isLong,
+      avgEntryPrice,
+      unsettledPnl,
+      totalPnl,
+      unrealizedPnl,
+      realizedPnl,
+      positionFunding,
+      roe,
+      estLiqPrice: null,
+    };
   }
 
   toString(perpMarket?: PerpMarket): string {
