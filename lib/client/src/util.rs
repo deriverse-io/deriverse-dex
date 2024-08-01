@@ -3,7 +3,7 @@ use solana_sdk::instruction::Instruction;
 
 use anchor_lang::prelude::{AccountMeta, Pubkey};
 use anyhow::Context;
-use tracing::info;
+use tracing::{info, level_filters::LevelFilter};
 
 /// Some Result<> types don't convert to anyhow::Result nicely. Force them through stringification.
 pub trait AnyhowWrap {
@@ -55,7 +55,7 @@ pub fn tracing_subscriber_init() {
     let format = tracing_subscriber::fmt::format().with_ansi(atty::is(atty::Stream::Stdout));
 
     tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env().add_directive(tracing::Level::INFO.into()))
         .event_format(format)
         .init();
 }
