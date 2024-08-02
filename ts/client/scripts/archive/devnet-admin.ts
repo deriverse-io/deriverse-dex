@@ -125,7 +125,7 @@ async function main() {
     );
     await group.reloadAll(client);
     // eslint-disable-next-line
-  } catch (error) {}
+  } catch (error) { }
 
   // register token 1
   console.log(`Registering SOL...`);
