@@ -603,7 +603,7 @@ async fn main() -> anyhow::Result<()> {
             .to_vec(),
         ),
     };
-    let use_geyser = true;
+    let use_geyser = false; // TODO: find out if we need to use geyser
     if use_geyser {
         grpc_plugin_source::process_events(
             &config.source,

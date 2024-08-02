@@ -1,6 +1,6 @@
 {
   "name": "@deriverse/sdk",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Typescript Client for deriverse program.",
   "repository": "https://github.com/deriverse-io/deriverse-dex",
   "sideEffects": false,
@@ -38,6 +38,7 @@
     "axios": "^1.4.0",
     "chai": "^4.3.4",
     "cli-table3": "^0.6.3",
+    "console-gui-tools": "^3.7.0",
     "console-table-printer": "^2.11.1",
     "eslint": "^7.28.0",
     "eslint-config-prettier": "^7.2.0",

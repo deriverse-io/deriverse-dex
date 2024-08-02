@@ -1,11 +1,13 @@
 import { OracleProvider } from '../src/accounts/oracle';
 import { MangoClient } from '../src/client';
 import { MANGO_V4_MAIN_GROUP as MANGO_V4_PRIMARY_GROUP } from '../src/constants';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-const { MB_CLUSTER_URL } = process.env;
+const { MB_CLUSTER_URL, RPC_URL } = process.env;
 
 async function buildClient(): Promise<MangoClient> {
-  return await MangoClient.connectDefault(MB_CLUSTER_URL!);
+  return await MangoClient.connectDefault(RPC_URL!);
 }
 
 async function updateSpotMarkets(): Promise<void> {
