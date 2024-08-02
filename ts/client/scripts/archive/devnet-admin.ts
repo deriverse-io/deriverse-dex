@@ -36,6 +36,14 @@ const DEVNET_ORACLES = new Map([
   ['ETH', 'EdVCmQ9FSPcVe5YySXDPCRmc8aDQLKJ9xvYBMZPie1Vw'],
 ]);
 
+const RCP_ENDPOINT =
+  process.env.RCP_ENDPOINT || 'https://api.devnet.solana.com';
+
+const ADMIN_KEYPAIR =
+  process.env.ADMIN_KEYPAIR || '<path to>/.config/solana/id.json';
+
+const CLUSTER = process.env.CLUSTER || 'devnet';
+
 // TODO: should these constants be baked right into client.ts or even program?
 const NET_BORROWS_LIMIT_NATIVE = 1 * Math.pow(10, 7) * Math.pow(10, 6);
 
@@ -45,19 +53,18 @@ async function main() {
   let sig;
 
   const options = AnchorProvider.defaultOptions();
-  const connection = new Connection(
-    'https://mango.devnet.rpcpool.com',
-    options,
-  );
+  const connection = new Connection(RCP_ENDPOINT, options);
 
   const admin = Keypair.fromSecretKey(
-    Buffer.from(
-      JSON.parse(fs.readFileSync(process.env.ADMIN_KEYPAIR!, 'utf-8')),
-    ),
+    Buffer.from(JSON.parse(fs.readFileSync(ADMIN_KEYPAIR, 'utf-8'))),
   );
   const adminWallet = new Wallet(admin);
   console.log(`Admin ${adminWallet.publicKey.toBase58()}`);
   const adminProvider = new AnchorProvider(connection, adminWallet, options);
+
+  console.log(`Admin account: ${adminWallet.publicKey.toBase58()}`);
+  console.log(`Program ID: ${MANGO_V4_ID[CLUSTER]}`);
+
   const client = await MangoClient.connect(
     adminProvider,
     'devnet',

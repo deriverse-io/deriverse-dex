@@ -22,7 +22,7 @@ struct Cli {
 
 #[derive(Args, Debug, Clone)]
 struct Rpc {
-    #[clap(short, long, default_value = "m")]
+    #[clap(short, long, default_value = "d", env = "RPC_URL")]
     url: String,
 
     #[clap(short, long, default_value = "")]
@@ -31,11 +31,11 @@ struct Rpc {
 
 #[derive(Args, Debug, Clone)]
 struct CreateAccount {
-    #[clap(short, long)]
+    #[clap(short, long, env = "GROUP")]
     group: String,
 
     /// also pays for everything
-    #[clap(short, long)]
+    #[clap(short, long, env = "OWNER")]
     owner: String,
 
     #[clap(short, long)]
@@ -50,17 +50,17 @@ struct CreateAccount {
 
 #[derive(Args, Debug, Clone)]
 struct Deposit {
-    #[clap(long)]
+    #[clap(long, env = "ACCOUNT")]
     account: String,
 
     /// also pays for everything
-    #[clap(short, long)]
+    #[clap(short, long, env = "OWNER")]
     owner: String,
 
-    #[clap(short, long)]
+    #[clap(short, long, env = "MINT")]
     mint: String,
 
-    #[clap(short, long)]
+    #[clap(short, long, env = "AMOUNT")]
     amount: u64,
 
     #[clap(flatten)]
@@ -275,12 +275,31 @@ impl Rpc {
     }
 }
 
+#[derive(Parser, Debug)]
+#[clap()]
+struct CliDotenv {
+    // When --dotenv <file> is passed, read the specified dotenv file before parsing args
+    #[clap(long)]
+    dotenv: std::path::PathBuf,
+
+    remaining_args: Vec<std::ffi::OsString>,
+}
+
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
     mango_v4_client::tracing_subscriber_init();
 
-    dotenv::dotenv().ok();
-    let cli = Cli::parse();
+    let args = if let Ok(cli_dotenv) = CliDotenv::try_parse() {
+        dotenv::from_path(cli_dotenv.dotenv)?;
+        cli_dotenv.remaining_args
+    } else {
+        dotenv::dotenv().ok();
+        std::env::args_os().collect()
+    };
+    let cli = Cli::parse_from(args);
+
+    // dotenv::dotenv().ok();
+    // let cli = Cli::parse();
 
     match cli.command {
         Command::CreateAccount(cmd) => {

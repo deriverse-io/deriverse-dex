@@ -55,7 +55,10 @@ pub fn tracing_subscriber_init() {
     let format = tracing_subscriber::fmt::format().with_ansi(atty::is(atty::Stream::Stdout));
 
     tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::from_default_env()
+                .add_directive(tracing::Level::INFO.into()),
+        )
         .event_format(format)
         .init();
 }

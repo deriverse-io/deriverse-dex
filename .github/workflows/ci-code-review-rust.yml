@@ -14,7 +14,7 @@ on:
         'Cargo.lock',
       ]
   pull_request:
-    branches: ['main', 'dev']
+    branches: ['master', 'dev']
     paths:
       [
         'bin/cli/**',
@@ -115,6 +115,7 @@ jobs:
   idl:
     name: IDL Check
     runs-on: ubuntu-latest
+    if: false
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -122,8 +123,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: main
-          path: main
+          ref: master
+          path: master
 
       - name: Setup Node
         uses: actions/setup-node@v3

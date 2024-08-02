@@ -3,11 +3,10 @@
 set -ex pipefail
 
 RPC_URL=https://solana-devnet.g.alchemy.com/v2/eXf3xv8NTResmuytiC4ZORpkDr4Hy5HO
-WALLET_FOR_PROGRAM=~/.config/solana/rec.json
 WALLET_WITH_FUNDS=~/.config/solana/mydev.json
 PROGRAM_ID=8AHhgx8bNF4oejgfUzN6A7ZN1CPrh8NMsgnrcDiNgUiZ
 
-# build program, 
+# build program
 anchor build -- --features enable-gpl
 
 # patch types, which we want in rust, but anchor client doesn't support

@@ -311,7 +311,7 @@ export function accountSize(idl: Idl, idlAccount: IdlTypeDef): number {
     );
     return Math.max(...variantSizes) + 1;
   }
-  if (idlAccount.type.fields === undefined) {
+  if (!('fields' in idlAccount.type)) {
     return 0;
   }
   return idlAccount.type.fields
