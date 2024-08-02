@@ -34,12 +34,7 @@ dotenv.config();
 
 const GROUP_NUM = Number(process.env.GROUP_NUM || 0);
 
-const {
-  MB_PAYER_KEYPAIR,
-  ADMIN_KEYPAIR,
-  RPC_URL,
-} = process.env;
-
+const { MB_PAYER_KEYPAIR, ADMIN_KEYPAIR, RPC_URL } = process.env;
 
 async function buildAdminClient(): Promise<[MangoClient, Keypair, Keypair]> {
   const admin = Keypair.fromSecretKey(
