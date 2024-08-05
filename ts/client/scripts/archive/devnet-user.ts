@@ -8,6 +8,8 @@ import { PerpOrderSide, PerpOrderType } from '../../src/accounts/perp';
 import { MangoClient } from '../../src/client';
 import { MANGO_V4_ID } from '../../src/constants';
 import { toUiDecimalsForQuote } from '../../src/utils';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 //
 // An example for users based on high level api i.e. the client
@@ -32,7 +34,8 @@ const GROUP_NUM = Number(process.env.GROUP_NUM || 0);
 async function main(): Promise<void> {
   const options = AnchorProvider.defaultOptions();
   const connection = new Connection(
-    'https://mango.devnet.rpcpool.com',
+    process.env.RPC_URL!,
+    // 'https://mango.devnet.rpcpool.com',
     options,
   );
 

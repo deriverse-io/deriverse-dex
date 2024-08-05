@@ -606,7 +606,7 @@ async fn main() -> anyhow::Result<()> {
             .map(|c| c.connection_string.clone())
             .collect::<String>()
     );
-    let use_geyser = true;
+    let use_geyser = false; // TODO: find out if we need to use geyser
     let all_queue_pks = [perp_queue_pks.clone()].concat();
     let relevant_pubkeys = all_queue_pks.iter().map(|m| m.1).collect();
     let filter_config = FilterConfig {

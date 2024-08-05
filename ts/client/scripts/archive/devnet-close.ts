@@ -1,0 +1,95 @@
+import { AnchorProvider, Wallet } from '@coral-xyz/anchor';
+import { Cluster, Connection, Keypair } from '@solana/web3.js';
+import fs from 'fs';
+import { MangoClient } from '../../src/client';
+import { MANGO_V4_ID } from '../../src/constants';
+import * as dotenv from 'dotenv';
+import { Group } from '../../src';
+dotenv.config();
+
+//
+// example script to close accounts - banks, markets, group etc. which require admin to be the signer
+//
+
+// Use to close only a specific group by number. Use "all" to close all groups.
+const GROUP_NUM = process.env.GROUP_NUM ?? 0;
+
+const CLUSTER = process.env.CLUSTER || 'devnet';
+
+async function main(): Promise<void> {
+  const options = AnchorProvider.defaultOptions();
+  const connection = new Connection(process.env.RPC_URL!, options);
+
+  const admin = Keypair.fromSecretKey(
+    Buffer.from(
+      JSON.parse(fs.readFileSync(process.env.ADMIN_KEYPAIR!, 'utf-8')),
+    ),
+  );
+  const adminWallet = new Wallet(admin);
+  console.log(`Admin ${adminWallet.publicKey.toBase58()}`);
+  const adminProvider = new AnchorProvider(connection, adminWallet, options);
+  const client = await MangoClient.connect(
+    adminProvider,
+    CLUSTER as Cluster,
+    MANGO_V4_ID[CLUSTER],
+    {
+      idsSource: 'get-program-accounts',
+      prioritizationFee: 5,
+    },
+  );
+
+  const groups = await (async (): Promise<Group[]> => {
+    if (GROUP_NUM === 'all') {
+      return await client.getGroupsForCreator(admin.publicKey);
+    } else {
+      return [
+        await client.getGroupForCreator(admin.publicKey, Number(GROUP_NUM)),
+      ];
+    }
+  })();
+  for (const group of groups) {
+    console.log(`Group ${group.publicKey}`);
+
+    let sig;
+
+    // close all perp markets
+    for (const market of group.perpMarketsMapByMarketIndex.values()) {
+      try {
+        console.log(`Closing perp market ${market.name}`);
+        sig = await client.perpCloseMarket(group, market.perpMarketIndex);
+        console.log(
+          `Closed perp market ${market.name}, sig https://explorer.solana.com/tx/${sig.signature}`,
+        );
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // close all banks
+    for (const banks of group.banksMapByMint.values()) {
+      sig = await client.tokenDeregister(group, banks[0].mint);
+      console.log(
+        `Removed token ${banks[0].name}, sig https://explorer.solana.com/tx/${sig.signature}`,
+      );
+    }
+
+    // close stub oracles
+    const stubOracles = await client.getStubOracle(group);
+    for (const stubOracle of stubOracles) {
+      sig = await client.stubOracleClose(group, stubOracle.publicKey);
+      console.log(
+        `Closed stub oracle ${stubOracle.publicKey}, sig https://explorer.solana.com/tx/${sig.signature}`,
+      );
+    }
+
+    // finally, close the group
+    sig = await client.groupClose(group);
+    console.log(
+      `Closed group, sig https://explorer.solana.com/tx/${sig.signature}`,
+    );
+  }
+
+  process.exit();
+}
+
+main();
