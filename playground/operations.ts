@@ -12,6 +12,7 @@ import {
   PerpOrderType,
 } from '../ts/client/src';
 import * as dotenv from 'dotenv';
+import { Keypair } from '@solana/web3.js';
 dotenv.config();
 
 export const DEVNET_USDC = new PublicKey(process.env.DEVNET_USDC!);
@@ -27,10 +28,26 @@ export class Operations {
 
   async init(): Promise<void> {
     this.client = await getClient();
-    this.group = await this.client.getGroupForCreator(this.adminPk, 420);
+    this.group = await this.client.getGroupForCreator(
+      this.adminPk,
+      parseInt(process.env.GROUP_NUM!),
+    );
     this.mangoAccounts = await this.client.getMangoAccountsForOwner(
       this.group,
       this.adminPk,
+    );
+    this.initialized = true;
+  }
+
+  async initWithKeypair(keypair: Keypair): Promise<void> {
+    this.client = await getClient(keypair);
+    this.group = await this.client.getGroupForCreator(
+      this.adminPk,
+      parseInt(process.env.GROUP_NUM!),
+    );
+    this.mangoAccounts = await this.client.getMangoAccountsForOwner(
+      this.group,
+      keypair.publicKey,
     );
     this.initialized = true;
   }
