@@ -55,8 +55,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.REGISTRY }}/deriverse/${{ env.IMAGE }}:${{ github.sha }}
-            ${{ env.REGISTRY }}/deriverse/${{ env.IMAGE }}:latest
+            ${{ env.REGISTRY }}/deriverse-io/${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/deriverse-io/${{ env.IMAGE }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
