@@ -20,7 +20,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE: mango-v4
+  IMAGE: deriverse-dex
   REGISTRY: ghcr.io
 
 jobs:
@@ -55,8 +55,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.REGISTRY }}/blockworks-foundation/${{ env.IMAGE }}:${{ github.sha }}
-            ${{ env.REGISTRY }}/blockworks-foundation/${{ env.IMAGE }}:latest
+            ${{ env.REGISTRY }}/deriverse/${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/deriverse/${{ env.IMAGE }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
