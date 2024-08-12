@@ -20,15 +20,21 @@ export const OPENBOOK_PROGRAM_ID = {
   'mainnet-beta': new PublicKey('srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX'),
 };
 
-export const MANGO_V4_ID = {
+export const DERIVERSE_ID = {
   testnet: new PublicKey('8AHhgx8bNF4oejgfUzN6A7ZN1CPrh8NMsgnrcDiNgUiZ'),
   devnet: new PublicKey('8AHhgx8bNF4oejgfUzN6A7ZN1CPrh8NMsgnrcDiNgUiZ'),
   'mainnet-beta': new PublicKey('8AHhgx8bNF4oejgfUzN6A7ZN1CPrh8NMsgnrcDiNgUiZ'),
 };
 
-export const MANGO_V4_MAIN_GROUP = new PublicKey(
+export const MANGO_V4_ID = DERIVERSE_ID;
+
+export const DERIVERSE_MAIN_GROUP = new PublicKey(
   'C3DBQndS83wQGFPWrFob3JsdJAft1CkB6HtpTtWWo8d',
 );
+
+export const MANGO_V4_MAIN_GROUP = DERIVERSE_MAIN_GROUP;
+
+export const DERIVERSE_MAIN_GROUP_NO = 0;
 
 export const USDC_MINT = new PublicKey(
   '4dcRteBQhtSVewgUEEvSFRjhRZmWohjAAE5VzvT8if8f',
