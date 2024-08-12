@@ -4,12 +4,13 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { MangoClient } from '../../ts/client/src/index';
 import { getWallet } from './getWallet';
 import * as dotenv from 'dotenv';
+import { Keypair } from '@solana/web3.js';
 dotenv.config();
 
 const PROGRAM_ID =
   process.env.PROGRAM_ID ?? '8AHhgx8bNF4oejgfUzN6A7ZN1CPrh8NMsgnrcDiNgUiZ';
 
-export const getClient = (): MangoClient => {
+export const getClient = (keypair?: Keypair): MangoClient => {
   // const groupNum = process.env.GROUP_NUM ? parseInt(process.env.GROUP_NUM) : 0;
   // const insuranceMintPk = new PublicKey(process.env.DEVNET_USDC!);
   // const adminPk = new PublicKey(process.env.ADMIN_PK!);
@@ -19,7 +20,7 @@ export const getClient = (): MangoClient => {
     'confirmed',
   );
 
-  const provider = new AnchorProvider(conn, getWallet(), {
+  const provider = new AnchorProvider(conn, getWallet(keypair), {
     commitment: 'confirmed',
   });
   const envProvider = provider;
