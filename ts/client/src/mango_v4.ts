@@ -1761,6 +1761,85 @@ export type MangoV4 = {
       ]
     },
     {
+      "name": "airdrop",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "reserveAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "programAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "airdropInfo",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "airdrop"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "user"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "sequenceCheck",
       "accounts": [
         {
@@ -7232,6 +7311,18 @@ export type MangoV4 = {
     }
   ],
   "accounts": [
+    {
+      "name": "airdropInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "hasReceived",
+            "type": "bool"
+          }
+        ]
+      }
+    },
     {
       "name": "bank",
       "type": {
@@ -16249,6 +16340,85 @@ export const IDL: MangoV4 = {
       ]
     },
     {
+      "name": "airdrop",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "reserveAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "programAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "airdropInfo",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "airdrop"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "user"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "sequenceCheck",
       "accounts": [
         {
@@ -21720,6 +21890,18 @@ export const IDL: MangoV4 = {
     }
   ],
   "accounts": [
+    {
+      "name": "airdropInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "hasReceived",
+            "type": "bool"
+          }
+        ]
+      }
+    },
     {
       "name": "bank",
       "type": {

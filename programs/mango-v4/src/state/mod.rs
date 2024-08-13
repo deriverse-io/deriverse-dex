@@ -1,4 +1,5 @@
 pub use amm_cpi::*;
+pub use airdrop::*;
 pub use bank::*;
 pub use dynamic_account::*;
 pub use equity::*;
@@ -15,6 +16,7 @@ pub use stable_price::*;
 pub use token_conditional_swap::*;
 
 mod amm_cpi;
+mod airdrop;
 mod bank;
 mod dynamic_account;
 mod equity;
