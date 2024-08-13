@@ -27,7 +27,7 @@ futures = "0.3.25"
 itertools = "0.10.3"
 jsonrpc-core = "18.0.0"
 jsonrpc-core-client = { version = "18.0.0", features = ["ws", "http", "tls"] }
-mango-v4 = { path = "../../programs/mango-v4", features = ["client", "devnet"] }
+mango-v4 = { path = "../../programs/mango-v4", features = ["client"] }
 pyth-sdk-solana = { workspace = true }
 serum_dex = { workspace = true, features = ["no-entrypoint", "program"] }
 shellexpand = "2.1.0"

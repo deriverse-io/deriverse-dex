@@ -36,3 +36,6 @@ jq 'del(.instructions[]?.accounts[]?.docs)' target/idl/mango_v4_no_docs.json \
  > target/idl/mango_v4_no_docs.json.bak && mv target/idl/mango_v4_no_docs.json.bak target/idl/mango_v4_no_docs.json
 jq 'del(.types[]?.type.fields[]?.docs)' target/idl/mango_v4_no_docs.json \
  > target/idl/mango_v4_no_docs.json.bak && mv target/idl/mango_v4_no_docs.json.bak target/idl/mango_v4_no_docs.json
+
+# For some reason the anchor test is looking for wrong file name
+cp target/idl/mango_v4.json target/idl/mango_v_4.json

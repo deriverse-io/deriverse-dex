@@ -11,8 +11,8 @@ export const getKeypair = (): Keypair => {
   return userKey;
 };
 
-export const getWallet = (): Wallet => {
-  const userKey = getKeypair();
+export const getWallet = (keypair?: Keypair): Wallet => {
+  const userKey = keypair ?? getKeypair();
 
   return new Wallet(userKey);
 };

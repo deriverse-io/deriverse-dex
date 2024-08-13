@@ -458,6 +458,12 @@ pub mod mango_v4 {
         Ok(())
     }
 
+    pub fn airdrop(ctx: Context<Airdrop>) -> Result<()> {
+        #[cfg(feature = "devnet")]
+        instructions::airdrop(ctx)?;
+        Ok(())
+    }
+
     pub fn sequence_check(ctx: Context<SequenceCheck>, expected_sequence_number: u8) -> Result<()> {
         #[cfg(feature = "enable-gpl")]
         instructions::sequence_check(ctx, expected_sequence_number)?;
@@ -1781,16 +1787,17 @@ impl anchor_lang::Id for Mango {
     }
 }
 
+// TODO: FIX THIS !!!
 #[cfg(not(feature = "no-entrypoint"))]
 use {default_env::default_env, solana_security_txt::security_txt};
 #[cfg(not(feature = "no-entrypoint"))]
 security_txt! {
-    name: "Mango v4",
-    project_url: "https://mango.markets",
-    contacts: "email:hello@blockworks.foundation,link:https://docs.mango.markets/mango-markets/bug-bounty,discord:https://discord.gg/mangomarkets",
-    policy: "https://github.com/blockworks-foundation/mango-v4/blob/main/SECURITY.md",
+    name: "Deriverse Dex",
+    project_url: "https://deriverse.io",
+    contacts: "https://deriverse.io/contact",
+    policy: "https://deriverse.io/privacy",
     preferred_languages: "en",
-    source_code: "https://github.com/blockworks-foundation/mango-v4",
+    source_code: "https://github.com/deriverse-io/deriverse-dex",
     source_revision: default_env!("GITHUB_SHA", "Unknown source revision"),
     source_release: default_env!("GITHUB_REF_NAME", "Unknown source release")
 }
