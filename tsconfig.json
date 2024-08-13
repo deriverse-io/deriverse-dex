@@ -17,6 +17,6 @@
       "module": "commonjs"
     }
   },
-  "include": ["ts/client/src", "target/idl/*.json", "anchor-tests/**/*.ts", "z_notes/shit/parseLogs.ts"],
+  "include": ["ts/client/src", "target/idl/*.json", "anchor-tests/**/*.ts"],
   "exclude": ["ts/client/scripts"]
 }
