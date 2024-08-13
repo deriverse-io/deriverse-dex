@@ -13,6 +13,7 @@ import {
 } from '../ts/client/src';
 import * as dotenv from 'dotenv';
 import { Keypair } from '@solana/web3.js';
+import { BN } from '@coral-xyz/anchor';
 dotenv.config();
 
 export const DEVNET_USDC = new PublicKey(process.env.DEVNET_USDC!);
@@ -25,6 +26,7 @@ export class Operations {
   private group: Group;
   private mangoAccounts: MangoAccount[];
   private initialized = false;
+  private keypair: Keypair;
 
   async init(): Promise<void> {
     this.client = await getClient();
@@ -40,6 +42,7 @@ export class Operations {
   }
 
   async initWithKeypair(keypair: Keypair): Promise<void> {
+    this.keypair = keypair;
     this.client = await getClient(keypair);
     this.group = await this.client.getGroupForCreator(
       this.adminPk,
@@ -52,15 +55,32 @@ export class Operations {
     this.initialized = true;
   }
 
+  public async solAirdrop(): Promise<void> {
+    const requiredLamports = 99600000;
+    const airdropSignature = await this.client.connection.requestAirdrop(
+      this.keypair.publicKey,
+      requiredLamports,
+    );
+    const sig = await this.client.connection.confirmTransaction(
+      airdropSignature,
+    );
+    console.log('Airdrop Signature:', sig);
+  }
+
   public isInitialized(): boolean {
     return this.initialized;
   }
 
   public async reloadAll(): Promise<void> {
     await this.group.reloadAll(this.client);
-    for (const mangoAccount of this.mangoAccounts) {
-      await mangoAccount.reload(this.client);
+    this.mangoAccounts = await this.client.getMangoAccountsForOwner(
+      this.group,
+      this.adminPk,
+    );
     }
+
+  public getAllMangoAccounts(): MangoAccount[] {
+    return this.mangoAccounts;
   }
 
   public async logBidsAndAsks(debug = false): Promise<any> {
@@ -480,6 +500,24 @@ export class Operations {
       );
     } catch (error) {
       console.log('createMangoAccount error', error.message);
+    }
+  }
+
+  public async createMangoAccountWithAirdrop(name: string): Promise<any> {
+    try {
+      const sig = await this.client.createMangoAccountWithAirdrop(
+        this.group,
+        name,
+      );
+
+      console.log(
+        `createMangoAccountDevnet sig https://explorer.solana.com/tx/${sig.signature}?cluster=devnet`,
+      );
+    } catch (error) {
+      console.log(
+        `createMangoAccountDevnet error sig https://explorer.solana.com/tx/${error.txid}?cluster=devnet`,
+      );
+      console.log('createMangoAccountDevnet error', error.message);
     }
   }
 

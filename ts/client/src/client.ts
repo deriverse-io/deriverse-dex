@@ -1,6 +1,8 @@
 import {
   AnchorProvider,
   BN,
+  BorshCoder,
+  EventParser,
   Program,
   Provider,
   Wallet,
@@ -11,6 +13,7 @@ import {
   createCloseAccountInstruction,
   createInitializeAccount3Instruction,
   unpackAccount,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
 import {
   AccountInfo,
@@ -20,6 +23,7 @@ import {
   Commitment,
   ComputeBudgetProgram,
   Connection,
+  GetVersionedTransactionConfig,
   Keypair,
   MemcmpFilter,
   PublicKey,
@@ -959,6 +963,74 @@ export class MangoClient {
       .instruction();
 
     return await this.sendAndConfirmTransactionForGroup(group, [ix]);
+  }
+
+  public async createMangoAccountWithAirdrop(
+    group: Group,
+    name?: string,
+  ): Promise<MangoSignatureStatus> {
+    const accountNumber = 0;
+    const tokenCount = 3;
+    const serum3Count = 0;
+    const perpCount = 10;
+    const perpOoCount = 60;
+
+    const ixCreate = await this.program.methods
+      .accountCreate(
+        accountNumber,
+        tokenCount,
+        serum3Count,
+        perpCount,
+        perpOoCount,
+        name ?? '',
+      )
+      .accounts({
+        group: group.publicKey,
+        owner: (this.program.provider as AnchorProvider).wallet.publicKey,
+        payer: (this.program.provider as AnchorProvider).wallet.publicKey,
+      })
+      .instruction();
+
+    const seed = 'authority';
+    const [programAuthorityPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from(seed)],
+      this.program.programId,
+    );
+
+    const reserveAccount = await getAssociatedTokenAddress(
+      USDC_MINT,
+      programAuthorityPda,
+    );
+
+    const userPk = (this.program.provider as AnchorProvider).wallet.publicKey;
+
+    const userTokenAccount = await getAssociatedTokenAddress(USDC_MINT, userPk);
+
+    const [airdropInfoPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from('airdrop'), userPk.toBuffer()],
+      this.program.programId,
+    );
+
+    const ixMint = await this.program.methods
+      .airdrop()
+      .accounts({
+        user: (this.program.provider as AnchorProvider).wallet.publicKey,
+        reserveAccount,
+        userTokenAccount,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        programAuthority: programAuthorityPda,
+        airdropInfo: airdropInfoPda,
+        mint: USDC_MINT,
+        systemProgram: SystemProgram.programId,
+        rent: SYSVAR_RENT_PUBKEY,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .instruction();
+
+    return await this.sendAndConfirmTransactionForGroup(group, [
+      ixCreate,
+      ixMint,
+    ]);
   }
 
   public async expandMangoAccount(
