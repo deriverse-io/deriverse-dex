@@ -52,16 +52,13 @@ export type IOrderbookUi = {
 };
 
 export type IPerpPositionUi = {
-  basePosition: number;
-  floorBasePosition: number;
-  isLong: boolean;
+  quantity: number;
+  value: number;
   avgEntryPrice: number;
-  unsettledPnl: number;
+  isLong: boolean;
   totalPnl: number;
-  unrealizedPnl: number;
-  realizedPnl: number;
-  positionFunding: number;
-  roe: number;
+  oraclePrice: number;
+  estFunding: number | null;
   estLiqPrice: number | null;
 };
 

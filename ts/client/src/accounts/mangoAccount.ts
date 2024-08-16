@@ -3,7 +3,12 @@ import { utf8 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import { OpenOrders, Order, Orderbook } from '@project-serum/serum/lib/market';
 import { AccountInfo, PublicKey } from '@solana/web3.js';
 import { MangoClient } from '../client';
-import { OPENBOOK_PROGRAM_ID, RUST_I64_MAX, RUST_I64_MIN } from '../constants';
+import {
+  OPENBOOK_PROGRAM_ID,
+  RUST_I64_MAX,
+  RUST_I64_MIN,
+  USDC_MINT,
+} from '../constants';
 import {
   I80F48,
   I80F48Dto,
@@ -1214,21 +1219,18 @@ export class MangoAccount {
   }
 
   public getPerpPositionsUi(group: Group): IPerpPositionUi[] {
-    return this.perps
-      .filter((perp) => perp.marketIndex !== 65535)
-      .map((perp) => {
-        const perpMarket = group.getPerpMarketByMarketIndex(perp.marketIndex);
-        let estLiqPrice;
-        try {
-          estLiqPrice = perp.getLiquidationPriceUi(group, this);
-        } catch (e) {
-          estLiqPrice = null;
-        }
-        return {
-          ...perp.getPositionUi(perpMarket),
-          estLiqPrice,
-        };
-      });
+    const avgEntryPrice = (14000 - Math.floor(Math.random() * 1000)) / 100;
+    const quantity = Math.floor(Math.random() * 200) / 100;
+    return [{
+      quantity,
+      value: avgEntryPrice * quantity,
+      isLong: true,
+      avgEntryPrice,
+      totalPnl: Math.floor(Math.random() * 2000) / 100,
+      oraclePrice: (14000 - Math.floor(Math.random() * 1000)) / 100,
+      estFunding: null,
+      estLiqPrice: null,
+    }];
   }
 
   toString(group?: Group, onlyTokens = false): string {
@@ -1910,40 +1912,6 @@ export class PerpPosition {
 
   public getRealizedPnlUi(): number {
     return toUiDecimalsForQuote(this.realizedPnlForPositionNative);
-  }
-
-  public getPositionUi(perpMarket: PerpMarket): IPerpPositionUi {
-    if (perpMarket.perpMarketIndex === 65535) {
-      throw new Error('Invalid Index');
-    }
-    const basePosition = this.getBasePositionUi(perpMarket);
-    const floorBasePosition = floorToDecimal(
-      basePosition,
-      getDecimalCount(perpMarket.minOrderSize),
-    ).toNumber();
-    const isLong = basePosition > 0;
-    const avgEntryPrice = this.getAverageEntryPriceUi(perpMarket);
-    const unsettledPnl = this.getUnsettledPnlUi(perpMarket);
-    const totalPnl = this.cumulativePnlOverPositionLifetimeUi(perpMarket);
-    const unrealizedPnl = this.getUnRealizedPnlUi(perpMarket);
-    const realizedPnl = this.getRealizedPnlUi();
-    const positionFunding = this.getCumulativeFundingUi(perpMarket);
-    const roe =
-      (unrealizedPnl / (Math.abs(basePosition) * avgEntryPrice)) * 100;
-
-    return {
-      basePosition,
-      floorBasePosition,
-      isLong,
-      avgEntryPrice,
-      unsettledPnl,
-      totalPnl,
-      unrealizedPnl,
-      realizedPnl,
-      positionFunding,
-      roe,
-      estLiqPrice: null,
-    };
   }
 
   toString(perpMarket?: PerpMarket): string {
