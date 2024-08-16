@@ -55,6 +55,7 @@ import {
 import { StubOracle, createFallbackOracleMap } from './accounts/oracle';
 import {
   FillEvent,
+  IRecentTradeUi,
   OutEvent,
   PerpEventQueue,
   PerpMarket,
@@ -83,6 +84,7 @@ import {
   MAX_RECENT_PRIORITY_FEE_ACCOUNTS,
   OPENBOOK_PROGRAM_ID,
   RUST_U64_MAX,
+  USDC_MINT,
 } from './constants';
 import { Id } from './ids';
 import { IDL, MangoV4 } from './mango_v4';
@@ -5602,5 +5604,27 @@ export class MangoClient {
           2;
 
     return Math.max(1, Math.ceil(medianFee));
+  }
+
+  public subscribeToRecentTrades(
+    group: Group,
+    callback: (logUi: IRecentTradeUi) => void,
+  ): number {
+    const int = setInterval(() => {
+      const logUi: IRecentTradeUi = {
+        marketIndex: 0,
+        price: 140 + Math.floor(Math.random() * 20),
+        timestamp: 1723803308,
+        side: Math.round(Math.random()) == 0 ? 'bid' : 'ask',
+        quantity: Math.floor(Math.random() * 100) / 100,
+      };
+      callback(logUi);
+    }, 1000);
+
+    return int[Symbol.toPrimitive]() as unknown as number;
+  }
+
+  public unsubscribeRecentTrades(listenerId: number): void {
+    clearInterval(listenerId);
   }
 }

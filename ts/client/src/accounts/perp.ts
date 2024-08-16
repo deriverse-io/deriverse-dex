@@ -33,6 +33,15 @@ export type ParsedFillEvent = Modify<
   }
 >;
 
+export type IRecentTradeUi = {
+  marketIndex: number;
+  price: number;
+  timestamp: number;
+  side: 'bid' | 'ask';
+  quantity: number;
+};
+
+
 export type IPerpPositionUi = {
   basePosition: number;
   floorBasePosition: number;

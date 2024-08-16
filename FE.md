@@ -117,3 +117,14 @@ console.log(
 );
 ```
 
+# Recent Trades
+
+```typescript
+// Subscribe
+const listenerId = await client.subscribeToRecentTrades(group, (logUi: IRecentTradeUi) => {
+  console.log(logUi);
+});
+
+// Unsubscribe
+await client.unsubscribeRecentTrades(listenerId);
+```
