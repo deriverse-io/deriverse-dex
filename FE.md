@@ -128,3 +128,11 @@ const listenerId = await client.subscribeToRecentTrades(group, (logUi: IRecentTr
 // Unsubscribe
 await client.unsubscribeRecentTrades(listenerId);
 ```
+
+# Load orderbook
+
+```typescript
+const perpMarket = group.getPerpMarketByName('SOL-PERP');
+const forceReload = false; // After init should be false to minimize the number of requests, set to true to force reload on consecutive calls
+const orderbook: IOrderbookUi = await perpMarket.loadOrderbook(client, forceReload);
+```

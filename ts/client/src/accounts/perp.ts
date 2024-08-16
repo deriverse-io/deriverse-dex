@@ -41,6 +41,15 @@ export type IRecentTradeUi = {
   quantity: number;
 };
 
+export type IOrderUi = {
+  price: number;
+  size: number;
+};
+
+export type IOrderbookUi = {
+  bids: IOrderUi[];
+  asks: IOrderUi[];
+};
 
 export type IPerpPositionUi = {
   basePosition: number;
@@ -365,6 +374,34 @@ export class PerpMarket {
       this._bids = BookSide.from(client, this, BookSideType.bids, bids as any);
     }
     return this._bids;
+  }
+
+  public async loadOrderbook(
+    client: MangoClient,
+    forceReload = false,
+  ): Promise<IOrderbookUi> {
+    return new Promise((resolve) => {
+      resolve({
+        bids: new Array(5)
+          .fill({ price: 0, size: 0 })
+          .map(() => ({
+            price: (14000 - Math.floor(Math.random() * 1000)) / 100,
+            size: Math.floor(Math.random() * 100) / 100,
+          }))
+          .sort((a, b) => {
+            return b.price - a.price;
+          }),
+        asks: new Array(5)
+          .fill({ price: 0, size: 0 })
+          .map(() => ({
+            price: (14000 + Math.floor(Math.random() * 1000)) / 100,
+            size: Math.floor(Math.random() * 100) / 100,
+          }))
+          .sort((a, b) => {
+            return a.price - b.price;
+          }),
+      });
+    });
   }
 
   public async loadEventQueue(client: MangoClient): Promise<PerpEventQueue> {
