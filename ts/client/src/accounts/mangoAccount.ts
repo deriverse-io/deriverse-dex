@@ -252,6 +252,29 @@ export class MangoAccount {
     );
   }
 
+  public async getOpenOrdersForMarketUi(
+    client: MangoClient,
+    group: Group,
+    perpMarketIndex: PerpMarketIndex,
+  ): Promise<IOpenOrderUi[]> {
+    return new Promise((resolve) => {
+      resolve(
+        new Array(5).fill({} as any).map(() => ({
+          name: 'SOL-PERP',
+          marketIndex: 0 as PerpMarketIndex,
+          initLeverage: 10,
+          maxLeverage: 10,
+          orderId: '123123123124124143123123131231523432123123',
+          price: (1400 - Math.floor(Math.random() * 2000)) / 100,
+          side: 'bid' as any,
+          size: Math.floor(Math.random() * 100) / 100,
+          value: (1400 - Math.floor(Math.random() * 2000)) / 100,
+          expiryTimestamp: 0,
+        })),
+      );
+    });
+  }
+
   public getToken(tokenIndex: TokenIndex): TokenPosition | undefined {
     return this.tokens.find((ta) => ta.tokenIndex == tokenIndex);
   }
@@ -1221,7 +1244,8 @@ export class MangoAccount {
   public getPerpPositionsUi(group: Group): IPerpPositionUi[] {
     const avgEntryPrice = (14000 - Math.floor(Math.random() * 1000)) / 100;
     const quantity = Math.floor(Math.random() * 200) / 100;
-    return [{
+    return [
+      {
       quantity,
       value: avgEntryPrice * quantity,
       isLong: true,
@@ -1230,7 +1254,8 @@ export class MangoAccount {
       oraclePrice: (14000 - Math.floor(Math.random() * 1000)) / 100,
       estFunding: null,
       estLiqPrice: null,
-    }];
+      },
+    ];
   }
 
   toString(group?: Group, onlyTokens = false): string {
@@ -1462,6 +1487,19 @@ export class Serum3PositionDto {
 export interface CumulativeFunding {
   cumulativeLongFunding: number;
   cumulativeShortFunding: number;
+}
+
+export interface IOpenOrderUi {
+  name: string;
+  marketIndex: PerpMarketIndex;
+  initLeverage: number;
+  maxLeverage: number;
+  orderId: string;
+  price: number;
+  side: 'bid' | 'ask';
+  size: number;
+  value: number;
+  expiryTimestamp: number;
 }
 
 export class PerpPosition {
