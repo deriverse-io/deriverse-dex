@@ -3090,6 +3090,45 @@ export class MangoClient {
     );
   }
 
+  public async perpPlaceMarketOrder(
+    group: Group,
+    mangoAccount: MangoAccount,
+    perpMarketIndex: PerpMarketIndex,
+    side: PerpOrderSide,
+    price: number,
+    quantity: number,
+    slippage: number,
+  ): Promise<MangoSignatureStatus> {
+    return new Promise((resolve) => {
+      resolve({
+        confirmations: 0,
+        confirmationStatus: 'processed',
+        err: null,
+        signature:
+          '81637guRKo5NUmqMc6HJYaSv6sRh4kNLF3ByPYLPyzAhqjwz6RwJQvJdmq1VNSQCg6tTm1RNE5Bhb5TbgVY1R32',
+      } as MangoSignatureStatus);
+    });
+  }
+
+  public async perpPlaceLimitOrder(
+    group: Group,
+    mangoAccount: MangoAccount,
+    perpMarketIndex: PerpMarketIndex,
+    side: PerpOrderSide,
+    price: number,
+    quantity: number,
+  ): Promise<MangoSignatureStatus> {
+    return new Promise((resolve) => {
+      resolve({
+        confirmations: 0,
+        confirmationStatus: 'processed',
+        err: null,
+        signature:
+          '81637guRKo5NUmqMc6HJYaSv6sRh4kNLF3ByPYLPyzAhqjwz6RwJQvJdmq1VNSQCg6tTm1RNE5Bhb5TbgVY1R32',
+      } as MangoSignatureStatus);
+    });
+  }
+
   // perpPlaceOrder ix returns an optional, custom order id,
   // but, since we use a customer tx sender, this method
   // doesn't return it
