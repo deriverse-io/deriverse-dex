@@ -72,6 +72,18 @@ const perpMarket = group.getPerpMarketByName('SOL-PERP');
 const perpMarket = group.getPerpMarketByMarketIndex(0 as PerpMarketIndex);
 ```
 
+## Get MAX quote price for bid (buy)
+
+```typescript
+const maxQuote: number = await mangoAccount.getMaxQuoteForPerpBidUi(group, 0 as PerpMarketIndex);
+```
+
+## Get MAX base price for ask (sell)
+
+```typescript
+const maxBase: number = await mangoAccount.getMaxBaseForPerpAskUi(group, 0 as PerpMarketIndex);
+```
+
 ## Market order
 
 ```typescript

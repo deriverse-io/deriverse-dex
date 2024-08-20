@@ -3092,6 +3092,16 @@ export class MangoClient {
     );
   }
 
+  private calcPrice(
+    side: PerpOrderSide,
+    price: number,
+    slippage: number,
+  ): number {
+    return side == PerpOrderSide.bid
+      ? price * (1 - slippage)
+      : price * (1 + slippage);
+  }
+
   public async perpPlaceMarketOrder(
     group: Group,
     mangoAccount: MangoAccount,
@@ -3100,16 +3110,27 @@ export class MangoClient {
     price: number,
     quantity: number,
     slippage: number,
+    reduceOnly = false,
   ): Promise<MangoSignatureStatus> {
-    return new Promise((resolve) => {
-      resolve({
-        confirmations: 0,
-        confirmationStatus: 'processed',
-        err: null,
-        signature:
-          '81637guRKo5NUmqMc6HJYaSv6sRh4kNLF3ByPYLPyzAhqjwz6RwJQvJdmq1VNSQCg6tTm1RNE5Bhb5TbgVY1R32',
-      } as MangoSignatureStatus);
-    });
+    const calcPrice = this.calcPrice(side, price, slippage);
+
+    const ix = await this.perpPlaceOrderV2Ix(
+      group,
+      mangoAccount,
+      perpMarketIndex,
+      side,
+      calcPrice,
+      quantity,
+      undefined,
+      undefined,
+      PerpOrderType.immediateOrCancel,
+      PerpSelfTradeBehavior.decrementTake,
+      reduceOnly,
+      0,
+      10,
+    );
+
+    return await this.sendAndConfirmTransactionForGroup(group, [ix]);
   }
 
   public async perpPlaceLimitOrder(
@@ -3119,16 +3140,25 @@ export class MangoClient {
     side: PerpOrderSide,
     price: number,
     quantity: number,
+    reduceOnly = false,
   ): Promise<MangoSignatureStatus> {
-    return new Promise((resolve) => {
-      resolve({
-        confirmations: 0,
-        confirmationStatus: 'processed',
-        err: null,
-        signature:
-          '81637guRKo5NUmqMc6HJYaSv6sRh4kNLF3ByPYLPyzAhqjwz6RwJQvJdmq1VNSQCg6tTm1RNE5Bhb5TbgVY1R32',
-      } as MangoSignatureStatus);
-    });
+    const ix = await this.perpPlaceOrderV2Ix(
+      group,
+      mangoAccount,
+      perpMarketIndex,
+      side,
+      price,
+      quantity,
+      undefined,
+      undefined,
+      PerpOrderType.limit,
+      PerpSelfTradeBehavior.decrementTake,
+      reduceOnly,
+      0,
+      10,
+    );
+
+    return await this.sendAndConfirmTransactionForGroup(group, [ix]);
   }
 
   // perpPlaceOrder ix returns an optional, custom order id,

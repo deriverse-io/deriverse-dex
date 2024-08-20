@@ -23,7 +23,7 @@ function getProvider(connection: Connection): Provider {
   return provider;
 }
 
-describe.only('Oracle', () => {
+describe('Oracle', () => {
   const connection = new Connection('https://api.mainnet-beta.solana.com/');
   const CLUSTER = 'mainnet-beta';
 
