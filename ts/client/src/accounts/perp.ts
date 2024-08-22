@@ -373,32 +373,34 @@ export class PerpMarket {
     return this._bids;
   }
 
+  private groupSizeByPrice(orders: PerpOrder[]): IOrderUi[] {
+    const priceMap = new Map<number, number>();
+
+    // eslint-disable-next-line prefer-const
+    for (let { price, size } of orders) {
+      price = Number(price.toFixed(5));
+      priceMap.set(
+        price,
+        Number(((priceMap.get(price) || 0) + size).toFixed(5)),
+      );
+    }
+
+    return Array.from(priceMap, ([price, size]) => ({ price, size }));
+  }
+
   public async loadOrderbook(
     client: MangoClient,
     forceReload = false,
   ): Promise<IOrderbookUi> {
-    return new Promise((resolve) => {
-      resolve({
-        bids: new Array(5)
-          .fill({ price: 0, size: 0 })
-          .map(() => ({
-            price: (14000 - Math.floor(Math.random() * 1000)) / 100,
-            size: Math.floor(Math.random() * 100) / 100,
-          }))
-          .sort((a, b) => {
-            return b.price - a.price;
-          }),
-        asks: new Array(5)
-          .fill({ price: 0, size: 0 })
-          .map(() => ({
-            price: (14000 + Math.floor(Math.random() * 1000)) / 100,
-            size: Math.floor(Math.random() * 100) / 100,
-          }))
-          .sort((a, b) => {
-            return a.price - b.price;
-          }),
-      });
-    });
+    const [bids, asks] = await Promise.all([
+      this.loadBids(client, forceReload),
+      this.loadAsks(client, forceReload),
+    ]);
+
+    return {
+      bids: this.groupSizeByPrice(Array.from(bids.items())),
+      asks: this.groupSizeByPrice(Array.from(asks.items())),
+    };
   }
 
   public async loadEventQueue(client: MangoClient): Promise<PerpEventQueue> {
