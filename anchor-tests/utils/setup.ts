@@ -1,9 +1,11 @@
 import * as anchor from '@coral-xyz/anchor';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
-import { Connection, PublicKey } from '@solana/web3.js';
 import { MangoV4 } from '../../target/types/mango_v4';
 import { MANGO_V4_ID } from '../../ts/client/src/index';
+import * as spl from '@solana/spl-token';
+import { Connection, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { Group, MangoAccount, MangoClient } from '../../ts/client/src/index';
 
 export enum MINTS {
   USDC = 'USDC',
@@ -30,3 +32,129 @@ export const connection = new Connection(
 );
 
 export const program = anchor.workspace.MangoV4 as Program<MangoV4>;
+
+export interface TestUser {
+  keypair: anchor.web3.Keypair;
+  tokenAccounts: spl.Account[];
+  mangoAccount: MangoAccount;
+  client: MangoClient;
+}
+
+export async function createMints(
+  program: anchor.Program<MangoV4>,
+  payer: anchor.web3.Keypair,
+  admin,
+): Promise<Partial<Record<keyof typeof MINTS, PublicKey>>> {
+  const mints: PublicKey[] = [];
+  for (let i = 0; i < 2; i++) {
+    mints.push(
+      await spl.createMint(
+        program.provider.connection,
+        payer,
+        admin.publicKey,
+        admin.publicKey,
+        USDC_DECIMALS,
+        undefined,
+        undefined,
+        spl.TOKEN_PROGRAM_ID,
+      ),
+    );
+  }
+  const mintsMap = {
+    USDC: mints[0],
+    BTC: mints[1],
+  };
+
+  return mintsMap;
+}
+
+export async function createUser(
+  mintsMap: Partial<Record<keyof typeof MINTS, PublicKey>>,
+  payer: anchor.web3.Keypair,
+  provider: anchor.Provider,
+  group: Group,
+  connection: Connection,
+  programId: PublicKey,
+  mintAmount = 1_000_000_000_000_000,
+): Promise<TestUser> {
+  const user = anchor.web3.Keypair.generate();
+
+  await provider.connection.requestAirdrop(
+    user.publicKey,
+    LAMPORTS_PER_SOL * 1000,
+  );
+
+  const tokenAccounts: spl.Account[] = [];
+  for (const mintKey in mintsMap) {
+    const mint: PublicKey = mintsMap[mintKey];
+    const tokenAccount = await spl.getOrCreateAssociatedTokenAccount(
+      provider.connection,
+      payer,
+      mint,
+      user.publicKey,
+      false,
+    );
+    if (mintAmount > 0) {
+      await spl.mintTo(
+        provider.connection,
+        payer,
+        mint,
+        tokenAccount.address,
+        payer,
+        mintAmount,
+        [],
+      );
+    }
+    tokenAccounts.push(tokenAccount);
+  }
+
+  const client = await MangoClient.connect(
+    new anchor.AnchorProvider(
+      connection,
+      new NodeWallet(user),
+      AnchorProvider.defaultOptions(),
+    ),
+    'devnet',
+    programId,
+    { idsSource: 'get-program-accounts' },
+  );
+
+  await client.createMangoAccount(group, 0);
+  const mangoAccount = await client.getMangoAccountForOwner(
+    group,
+    user.publicKey,
+    0,
+  );
+
+  return {
+    keypair: user,
+    tokenAccounts: tokenAccounts,
+    client,
+    mangoAccount: mangoAccount!,
+  };
+}
+
+export async function createUsers(
+  mintsMap: Partial<Record<keyof typeof MINTS, PublicKey>>,
+  payer: anchor.web3.Keypair,
+  provider: anchor.Provider,
+  group: Group,
+  connection: Connection,
+  programId: PublicKey,
+): Promise<TestUser[]> {
+  const users: TestUser[] = [];
+  for (let i = 0; i < NUM_USERS; i++) {
+    const user = await createUser(
+      mintsMap,
+      payer,
+      provider,
+      group,
+      connection,
+      programId,
+    );
+
+    users.push(user);
+  }
+
+  return users;
+}

@@ -47,6 +47,13 @@ impl<'a, 'info> DepositCommon<'a, 'info> {
         let mut bank = self.bank.load_mut()?;
         let token_index = bank.token_index;
 
+        // Check if the deposit amount is at least 50 for USD
+        let amount_min = 50 * I80F48::from_num(10u64.pow(bank.mint_decimals as u32));
+        require_msg!(
+            token_index != 0 || amount >= amount_min,
+            "deposit amount must be at least 50 for USD"
+        );
+
         let amount_i80f48 = {
             // Get the account's position for that token index
             let account = self.account.load_full()?;
