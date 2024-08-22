@@ -54,6 +54,7 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no root@${{ secrets.VPS_IP }} << EOF
           cd /deriverse
+          mkdir -p ./config
           echo "${SOLANA_KEYPAIR}" > ./config/id.json
           export RPC_URL=${RPC_URL}
           export KEEPER_ACCOUNT=${KEEPER_ACCOUNT}
