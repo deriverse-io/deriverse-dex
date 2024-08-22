@@ -1,0 +1,65 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [feature/vps-deployment]
+    paths:
+      [
+        '.github/ci-docker-publish.yml',
+        'programs/**',
+        'lib/client/**',
+        'bin/keeper/**',
+        'bin/liquidator/**',
+        'bin/settler/**',
+        'bin/service-mango-crank/**',
+        'bin/service-mango-fills/**',
+        'bin/service-mango-orderbook/**',
+        'bin/service-mango-pnl/**',
+        'bin/service-mango-health/**',
+      ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.4
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y docker
+
+    - name: Copy files to VPS
+      run: |
+        rsync -avz -e "ssh -o StrictHostKeyChecking=no" \
+        ./bin \
+        ./docker-compose-ci.yml \
+        root@${{ secrets.VPS_IP }}:/deriverse
+
+    - name: Deploy application
+      env:
+        RPC_URL: ${{ secrets.RPC_URL }}
+        KEEPER_ACCOUNT: ${{ secrets.KEEPER_ACCOUNT }}
+        LIQ_ACCOUNT: ${{ secrets.LIQ_ACCOUNT }}
+        SETTLER_ACCOUNT: ${{ secrets.SETTLER_ACCOUNT }}
+        SOLANA_KEYPAIR: ${{ secrets.SOLANA_KEYPAIR }}
+      run: |
+        ssh -o StrictHostKeyChecking=no root@${{ secrets.VPS_IP }} << EOF
+          cd /deriverse
+          echo "${SOLANA_KEYPAIR}" > ./config/id.json
+          export RPC_URL=${RPC_URL}
+          export KEEPER_ACCOUNT=${KEEPER_ACCOUNT}
+          export LIQ_ACCOUNT=${LIQ_ACCOUNT}
+          export SETTLER_ACCOUNT=${SETTLER_ACCOUNT}
+          docker-compose -f docker-compose-ci.yml down
+          docker-compose -f docker-compose-ci.yml pull
+          docker-compose -f docker-compose-ci.yml up -d --build
+        EOF

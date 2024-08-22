@@ -1,7 +1,5 @@
-# Dockerfile for keeper service in Heroku
-# heroku container:push keeper -R -a HEROKU_APP_NAME
-# heroku container:release -a HEROKU_APP_NAME
+# Dockerfile for keeper service
 ARG BASE_TAG=latest
-FROM ghcr.io/blockworks-foundation/mango-v4:$BASE_TAG
+FROM ghcr.io/deriverse-io/deriverse-dex:$BASE_TAG
 USER mangouser
 CMD ["settler"]

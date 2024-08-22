@@ -1,0 +1,47 @@
+services:
+  # Keeper Service
+  keeper:
+    build:
+      context: ./bin/keeper
+      dockerfile: Dockerfile.keeper
+    container_name: keeper
+    restart: always
+    environment:
+      - RPC_URL=${RPC_URL}
+      - MANGO_ACCOUNT=${KEEPER_ACCOUNT}
+      - OWNER=/config/id.json
+    volumes:
+      - ./config/id.json:/config/id.json
+
+  # Liquidator Service
+  liquidator:
+    build:
+      context: ./bin/liquidator
+      dockerfile: Dockerfile.liquidator
+    container_name: liquidator
+    restart: always
+    environment:
+      - RPC_URL=${RPC_URL}
+      - LIQOR_MANGO_ACCOUNT=${LIQ_ACCOUNT}
+      - LIQOR_OWNER=/config/id.json
+      - MIN_HEALTH_RATIO=50
+      - PRIORITIZATION_MICRO_LAMPORTS=1000
+      - TELEMETRY=true
+    volumes:
+      - ./config/id.json:/config/id.json
+
+  # Settler Service
+  settler:
+    build:
+      context: ./bin/settler
+      dockerfile: Dockerfile.settler
+    container_name: settler
+    restart: always
+    environment:
+      - RPC_URL=${RPC_URL}
+      - SERUM_PROGRAM=srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX
+      - SETTLER_MANGO_ACCOUNT=${SETTLER_ACCOUNT}
+      - SETTLER_OWNER=/config/id.json
+      - PRIORITIZATION_MICRO_LAMPORTS=1
+    volumes:
+      - ./config/id.json:/config/id.json
