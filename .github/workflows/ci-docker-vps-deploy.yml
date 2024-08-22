@@ -59,7 +59,7 @@ jobs:
           export KEEPER_ACCOUNT=${KEEPER_ACCOUNT}
           export LIQ_ACCOUNT=${LIQ_ACCOUNT}
           export SETTLER_ACCOUNT=${SETTLER_ACCOUNT}
-          docker-compose -f docker-compose-ci.yml down
-          docker-compose -f docker-compose-ci.yml pull
-          docker-compose -f docker-compose-ci.yml up -d --build
+          docker compose -f docker-compose-ci.yml down
+          docker compose -f docker-compose-ci.yml pull
+          docker compose -f docker-compose-ci.yml up -d --build
         EOF
