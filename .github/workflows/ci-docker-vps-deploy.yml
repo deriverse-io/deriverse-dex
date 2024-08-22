@@ -2,7 +2,7 @@ name: Deploy to VPS
 
 on:
   push:
-    branches: [deploy]
+    branches: [feature/vps-deployment]
     paths:
       [
         '.github/ci-docker-publish.yml',
