@@ -22,6 +22,7 @@ import {
 import { Group } from './group';
 import { MangoAccount } from './mangoAccount';
 import { OracleProvider, isOracleStaleOrUnconfident } from './oracle';
+import { floorToDecimal } from '../utils/decimals';
 
 export type PerpMarketIndex = number & As<'perp-market-index'>;
 
@@ -60,6 +61,17 @@ export type IPerpPositionUi = {
   oraclePrice: number;
   estFunding: number | null;
   estLiqPrice: number | null;
+};
+
+export type IMarketInfoBarUi = {
+  name: string;
+  marketIndex: PerpMarketIndex;
+  indexPrice: number;
+  openInterestAsset: number;
+  openInterestUsdc: number;
+  initLeverage: number;
+  maxLeverage: number;
+  instantaneousFundingRateUi: number; // current funding rate per hour in % form
 };
 
 export class PerpMarket {
@@ -635,6 +647,35 @@ export class PerpMarket {
     );
 
     return accountsWithSettleablePnl.slice(0, count);
+  }
+
+  public async getMarketInfo(client: MangoClient): Promise<IMarketInfoBarUi> {
+    const indexPrice = this.uiPrice;
+    const openInterestAsset = this.baseLotsToUi(this.openInterest);
+    const openInterestUsdc = floorToDecimal(
+      openInterestAsset * indexPrice,
+      this.baseDecimals,
+    )
+      .toDecimalPlaces(6)
+      .toNumber();
+
+    return {
+      name: this.name,
+      marketIndex: this.perpMarketIndex,
+      indexPrice,
+      openInterestAsset,
+      openInterestUsdc,
+      initLeverage: Number(
+        (1 / (this.initBaseLiabWeight.toNumber() - 1)).toFixed(2),
+      ),
+      maxLeverage: Number(
+        (1 / (this.maintBaseLiabWeight.toNumber() - 1)).toFixed(2),
+      ),
+      instantaneousFundingRateUi: this.getInstantaneousFundingRateUi(
+        await this.loadBids(client),
+        await this.loadAsks(client),
+      ),
+    };
   }
 
   toString(): string {
