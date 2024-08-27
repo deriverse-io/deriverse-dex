@@ -1,6 +1,7 @@
 bind_ws_addr = "[::]:8080"
 rpc_http_url = "$RPC_HTTP_URL"
-mango_group = "78b8f4cGCwmZ9ysPFMWLaLTkkaYnUjwMJYStWe5RTSSX"
+# mango_group = "C3DBQndS83wQGFPWrFob3JsdJAft1CkB6HtpTtWWo8d"
+mango_group = "ERQry4TzumLpxa74R3fU3YyEpPFNWqK96Bn8aBEgmrWg"
 
 [metrics]
 output_stdout = true

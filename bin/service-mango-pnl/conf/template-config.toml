@@ -24,7 +24,9 @@ program_id = "mv3ekLzLbnVPNxjSKvqBpU3ZeZXPQdEC3bp5MDEBG68"
 [pnl]
 update_interval_millis = 5000
 mango_program = "mv3ekLzLbnVPNxjSKvqBpU3ZeZXPQdEC3bp5MDEBG68"
-mango_group = "98pjRuQjK3qA6gXts96PqZT4Ze5QmnCmt3QYjhbUSPue"
+mango_group = "ERQry4TzumLpxa74R3fU3YyEpPFNWqK96Bn8aBEgmrWg"
+# mango_group = "C3DBQndS83wQGFPWrFob3JsdJAft1CkB6HtpTtWWo8d"
+# mango_group = "98pjRuQjK3qA6gXts96PqZT4Ze5QmnCmt3QYjhbUSPue"
 mango_cache = "EBDRoayCDDUvDgCimta45ajQeXbexv7aKqJubruqpyvu"
 
 [jsonrpc_server]

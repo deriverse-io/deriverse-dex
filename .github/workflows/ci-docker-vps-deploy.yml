@@ -42,7 +42,7 @@ jobs:
         rsync -avz -e "ssh -o StrictHostKeyChecking=no" \
         ./bin \
         ./docker-compose-ci.yml \
-        root@${{ secrets.VPS_IP }}:/deriverse
+        ${{secrets.VPS_USER}}@${{ secrets.VPS_IP }}:/deriverse
 
     - name: Deploy application
       env:
@@ -52,7 +52,7 @@ jobs:
         SETTLER_ACCOUNT: ${{ secrets.SETTLER_ACCOUNT }}
         SOLANA_KEYPAIR: ${{ secrets.SOLANA_KEYPAIR }}
       run: |
-        ssh -o StrictHostKeyChecking=no root@${{ secrets.VPS_IP }} << EOF
+        ssh -o StrictHostKeyChecking=no ${{secrets.VPS_USER}}@${{ secrets.VPS_IP }} << EOF
           cd /deriverse
           mkdir -p ./config
           echo "${SOLANA_KEYPAIR}" > ./config/id.json
