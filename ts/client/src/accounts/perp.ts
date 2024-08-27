@@ -12,6 +12,7 @@ import {
   U64_MAX_BN,
   toNative,
   toUiDecimals,
+  toUiDecimalsForQuote,
 } from '../utils';
 import {
   OracleConfig,
@@ -53,6 +54,8 @@ export type IOrderbookUi = {
 };
 
 export type IPerpPositionUi = {
+  name: string;
+  marketIndex: PerpMarketIndex;
   quantity: number;
   value: number;
   avgEntryPrice: number;
