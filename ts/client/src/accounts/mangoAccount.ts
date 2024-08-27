@@ -1246,16 +1246,60 @@ export class MangoAccount {
     const quantity = Math.floor(Math.random() * 200) / 100;
     return [
       {
-      quantity,
-      value: avgEntryPrice * quantity,
-      isLong: true,
-      avgEntryPrice,
-      totalPnl: Math.floor(Math.random() * 2000) / 100,
-      oraclePrice: (14000 - Math.floor(Math.random() * 1000)) / 100,
-      estFunding: null,
-      estLiqPrice: null,
+        quantity,
+        value: avgEntryPrice * quantity,
+        isLong: true,
+        avgEntryPrice,
+        totalPnl: Math.floor(Math.random() * 2000) / 100,
+        oraclePrice: (14000 - Math.floor(Math.random() * 1000)) / 100,
+        estFunding: null,
+        estLiqPrice: null,
       },
     ];
+  }
+
+  public async getAccountInfo(
+    group: Group,
+    client?: MangoClient,
+    forceReload = false,
+  ): Promise<IAccountInfo> {
+    if (forceReload && client) {
+      await this.reload(client);
+    }
+    const accountPnl = toUiDecimalsForQuote(this.getPnl(group).toNumber());
+    const accountValue = toUiDecimalsForQuote(this.getEquity(group).toNumber());
+    const freeCollateral = toUiDecimalsForQuote(
+      this.getCollateralValue(group).toNumber(),
+    );
+    const healthInit = this.getHealthRatioUi(group, HealthType.init);
+    const health = this.getHealthRatioUi(group, HealthType.maint);
+
+    const assetsValue = toUiDecimalsForQuote(
+      this.getAssetsValue(group).toNumber(),
+    );
+    const liabilitiesValue = toUiDecimalsForQuote(
+      this.getLiabsValue(group).toNumber(),
+    );
+
+    const getLeverage = (): number => {
+      if (isNaN(assetsValue / accountValue)) {
+        return 0;
+      } else {
+        return Math.abs(1 - assetsValue / accountValue);
+      }
+    };
+    const leverage = getLeverage();
+
+    return {
+      assetsValue,
+      accountValue,
+      liabilitiesValue,
+      freeCollateral,
+      accountPnl,
+      health,
+      healthInit,
+      leverage,
+    };
   }
 
   toString(group?: Group, onlyTokens = false): string {
@@ -1501,6 +1545,17 @@ export interface IOpenOrderUi {
   value: number;
   expiryTimestamp: number;
 }
+
+export type IAccountInfo = {
+  assetsValue: number;
+  accountValue: number;
+  liabilitiesValue: number;
+  freeCollateral: number;
+  accountPnl: number;
+  health: number;
+  healthInit: number;
+  leverage: number;
+};
 
 export class PerpPosition {
   static PerpMarketIndexUnset = 65535;
