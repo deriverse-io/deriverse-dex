@@ -1,14 +1,6 @@
 import * as spl from '@solana/spl-token';
-import {
-  PublicKey,
-  SystemProgram,
-  SYSVAR_RENT_PUBKEY,
-} from '@solana/web3.js';
-import {
-  Group,
-  MangoClient,
-  StubOracle,
-} from '../ts/client/src/index';
+import { PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY } from '@solana/web3.js';
+import { Group, MangoClient, StubOracle } from '../ts/client/src/index';
 import {
   connection,
   createMints,
@@ -33,10 +25,6 @@ chai.use(chaiAsPromised);
 chai.should();
 const expect = chai.expect;
 const assert = chai.assert;
-
-
-
-}
 
 describe('deriverse dex', () => {
   let users: TestUser[] = [];
