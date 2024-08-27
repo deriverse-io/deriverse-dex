@@ -5640,21 +5640,28 @@ export class MangoClient {
     group: Group,
     callback: (logUi: IRecentTradeUi) => void,
   ): number {
-    const int = setInterval(() => {
+    return this.program.addEventListener('FillLogV3', (log) => {
+      const perpMarket = group.perpMarketsMapByMarketIndex.get(
+        log.marketIndex as PerpMarketIndex,
+      );
+
+      if (!perpMarket) {
+        console.error('Perp market not found for FillLogV3', log);
+        return;
+      }
+
       const logUi: IRecentTradeUi = {
-        marketIndex: 0,
-        price: 140 + Math.floor(Math.random() * 20),
-        timestamp: 1723803308,
-        side: Math.round(Math.random()) == 0 ? 'bid' : 'ask',
-        quantity: Math.floor(Math.random() * 100) / 100,
+        marketIndex: log.marketIndex,
+        price: Number(perpMarket.priceLotsToUi(log.price).toFixed(10)),
+        timestamp: log.timestamp.toNumber(),
+        side: log.takerSide == 0 ? 'bid' : 'ask',
+        quantity: Number(perpMarket.baseLotsToUi(log.quantity).toFixed(10)),
       };
       callback(logUi);
-    }, 1000);
-
-    return int[Symbol.toPrimitive]() as unknown as number;
+    });
   }
 
   public unsubscribeRecentTrades(listenerId: number): void {
-    clearInterval(listenerId);
+    this.program.removeEventListener(listenerId);
   }
 }
