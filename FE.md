@@ -164,3 +164,18 @@ const positions = await mangoAccount.getPerpPositionsUi(group);
 await mangoAccount.getOpenOrdersForMarketUi(client, group, perpMarketIndex);
 ```
 
+
+# Account Info
+
+```typescript
+// get info
+const accountInfo = await mangoAccount.getAccountInfo(group);
+// force refresh and get info
+const accountInfo = await mangoAccount.getAccountInfo(group, client, true);
+```
+
+# Market info
+
+```typescript
+const marketInfo = await perpMarket.getMarketInfo(client);
+```
