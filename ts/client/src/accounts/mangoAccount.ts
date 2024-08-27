@@ -256,23 +256,49 @@ export class MangoAccount {
     client: MangoClient,
     group: Group,
     perpMarketIndex: PerpMarketIndex,
+    forceReload = true,
   ): Promise<IOpenOrderUi[]> {
-    return new Promise((resolve) => {
-      resolve(
-        new Array(5).fill({} as any).map(() => ({
-          name: 'SOL-PERP',
-          marketIndex: 0 as PerpMarketIndex,
-          initLeverage: 10,
-          maxLeverage: 10,
-          orderId: '123123123124124143123123131231523432123123',
-          price: (1400 - Math.floor(Math.random() * 2000)) / 100,
-          side: 'bid' as any,
-          size: Math.floor(Math.random() * 100) / 100,
-          value: (1400 - Math.floor(Math.random() * 2000)) / 100,
-          expiryTimestamp: 0,
-        })),
-      );
-    });
+    const openOrders: any[] = [];
+
+    const market = group.getPerpMarketByMarketIndex(perpMarketIndex);
+    const orders = await this.loadPerpOpenOrdersForMarket(
+      client,
+      group,
+      perpMarketIndex,
+      forceReload,
+    );
+
+    for (const order of orders) {
+      const expiryTimestamp =
+        order.expiryTimestamp === U64_MAX_BN
+          ? 0
+          : order.expiryTimestamp.toNumber();
+      const value = order.size * order.price;
+
+      const side = 'bid' in order.side ? 'bid' : 'ask';
+
+      const data: IOpenOrderUi = {
+        name: market.name,
+        marketIndex: market.perpMarketIndex,
+        initLeverage: Number(
+          (1 / (market.initBaseLiabWeight.toNumber() - 1)).toFixed(2),
+        ),
+        maxLeverage: Number(
+          (1 / (market.maintBaseLiabWeight.toNumber() - 1)).toFixed(2),
+        ),
+        orderId: order.orderId,
+        price: Number(order.price.toFixed(10)),
+        side: side,
+        isLong: side == 'bid',
+        size: Number(order.size.toFixed(10)),
+        value: Number(value.toFixed(10)),
+        expiryTimestamp,
+      };
+
+      openOrders.push(data);
+    }
+
+    return openOrders;
   }
 
   public getToken(tokenIndex: TokenIndex): TokenPosition | undefined {
@@ -1242,20 +1268,21 @@ export class MangoAccount {
   }
 
   public getPerpPositionsUi(group: Group): IPerpPositionUi[] {
-    const avgEntryPrice = (14000 - Math.floor(Math.random() * 1000)) / 100;
-    const quantity = Math.floor(Math.random() * 200) / 100;
-    return [
-      {
-        quantity,
-        value: avgEntryPrice * quantity,
-        isLong: true,
-        avgEntryPrice,
-        totalPnl: Math.floor(Math.random() * 2000) / 100,
-        oraclePrice: (14000 - Math.floor(Math.random() * 1000)) / 100,
-        estFunding: null,
-        estLiqPrice: null,
-      },
-    ];
+    return this.perps
+      .filter((perp) => perp.marketIndex !== 65535)
+      .map((perp) => {
+        const perpMarket = group.getPerpMarketByMarketIndex(perp.marketIndex);
+        let estLiqPrice;
+        try {
+          estLiqPrice = perp.getLiquidationPriceUi(group, this);
+        } catch (e) {
+          estLiqPrice = null;
+        }
+        return {
+          ...perp.getPositionUi(perpMarket),
+          estLiqPrice,
+        };
+      });
   }
 
   public async getAccountInfo(
@@ -1538,9 +1565,10 @@ export interface IOpenOrderUi {
   marketIndex: PerpMarketIndex;
   initLeverage: number;
   maxLeverage: number;
-  orderId: string;
+  orderId: BN;
   price: number;
   side: 'bid' | 'ask';
+  isLong: boolean;
   size: number;
   value: number;
   expiryTimestamp: number;
@@ -2005,6 +2033,51 @@ export class PerpPosition {
 
   public getRealizedPnlUi(): number {
     return toUiDecimalsForQuote(this.realizedPnlForPositionNative);
+  }
+
+  public getPositionUi(perpMarket: PerpMarket): IPerpPositionUi {
+    if (perpMarket.perpMarketIndex === 65535) {
+      throw new Error('Invalid Index');
+    }
+
+    const basePosition = this.getBasePositionUi(perpMarket);
+    const floorBasePosition = floorToDecimal(
+      basePosition,
+      getDecimalCount(perpMarket.minOrderSize),
+    ).toNumber();
+    const isLong = basePosition > 0;
+    const avgEntryPrice = this.getAverageEntryPriceUi(perpMarket);
+    const unsettledPnl = this.getUnsettledPnlUi(perpMarket);
+    const totalPnl = this.cumulativePnlOverPositionLifetimeUi(perpMarket);
+    const unrealizedPnl = this.getUnRealizedPnlUi(perpMarket);
+    const realizedPnl = this.getRealizedPnlUi();
+    const positionFunding = this.getCumulativeFundingUi(perpMarket);
+    // Return on Equity
+    const roe =
+      (unrealizedPnl / (Math.abs(basePosition) * avgEntryPrice)) * 100;
+
+    const value = floorToDecimal(
+      avgEntryPrice * basePosition,
+      getDecimalCount(perpMarket.minOrderSize),
+    ).toNumber();
+    const quantity = floorToDecimal(
+      basePosition,
+      getDecimalCount(perpMarket.minOrderSize),
+    ).toNumber();
+    const oraclePrice = perpMarket.uiPrice;
+
+    return {
+      name: perpMarket.name,
+      marketIndex: perpMarket.perpMarketIndex,
+      quantity,
+      value,
+      avgEntryPrice,
+      isLong,
+      totalPnl,
+      estFunding: positionFunding,
+      oraclePrice,
+      estLiqPrice: null,
+    };
   }
 
   toString(perpMarket?: PerpMarket): string {
