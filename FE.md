@@ -157,6 +157,24 @@ const orderbook: IOrderbookUi = await perpMarket.loadOrderbook(client, forceRelo
 const positions = await mangoAccount.getPerpPositionsUi(group);
 ```
 
+## Close perp position
+
+```typescript
+// DEFAULT SLIPPAGE: 0.5 = 50%
+await client.perpClosePosition(group, mangoAccount, perpMarketIndex);
+```
+
+## Cancel open order
+
+```typescript
+await client.perpCancelOrder(group, mangoAccount, perpMarketIndex, orderId);
+```
+
+```typescript
+const slippage = 0.1; // 10 % 
+await client.perpClosePosition(group, mangoAccount, perpMarketIndex, slippage);
+```
+
 ## Get open orders
 
 ```typescript

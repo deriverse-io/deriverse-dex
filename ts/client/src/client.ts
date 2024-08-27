@@ -60,6 +60,7 @@ import {
   PerpEventQueue,
   PerpMarket,
   PerpMarketIndex,
+  PerpOrder,
   PerpOrderSide,
   PerpOrderType,
   PerpSelfTradeBehavior,
@@ -97,6 +98,7 @@ import {
   getAssociatedTokenAddress,
   toNative,
   toNativeSellPerBuyTokenPrice,
+  toUiDecimalsForQuote,
 } from './utils';
 import {
   LatestBlockhash,
@@ -3039,6 +3041,46 @@ export class MangoClient {
       mangoAccount,
       perpMarketIndex,
     );
+    return await this.sendAndConfirmTransactionForGroup(group, [ix]);
+  }
+
+  public async perpClosePosition(
+    group: Group,
+    mangoAccount: MangoAccount,
+    perpMarketIndex: PerpMarketIndex,
+    slippage: number | undefined,
+  ): Promise<MangoSignatureStatus> {
+    if (!slippage) {
+      slippage = 0.5; // 50%, 5000bps
+    }
+
+    const perpPosition = mangoAccount
+      .perpActive()
+      .find((perpActive) => perpActive.marketIndex === perpMarketIndex);
+    if (!perpPosition) {
+      throw new Error(`No perp position found for market ${perpMarketIndex}`);
+    }
+    const perpMarket = group.getPerpMarketByMarketIndex(perpMarketIndex);
+    const isLong = perpPosition.basePositionLots.gt(new BN(0));
+    const price = perpMarket.uiPrice * (isLong ? 1 - slippage : 1 + slippage); // Try to cross the spread
+    const quantity = Math.abs(perpPosition.getBasePositionUi(perpMarket)) * 2; // send a larger size to ensure full order is closed
+
+    const ix = await this.perpPlaceOrderV2Ix(
+      group,
+      mangoAccount,
+      perpMarketIndex,
+      isLong ? PerpOrderSide.ask : PerpOrderSide.bid,
+      price,
+      quantity,
+      undefined,
+      Date.now(),
+      PerpOrderType.immediateOrCancel,
+      PerpSelfTradeBehavior.decrementTake,
+      true, // Reduce only
+      undefined,
+      100, // large order limit to ensure full order is closed
+    );
+
     return await this.sendAndConfirmTransactionForGroup(group, [ix]);
   }
 
