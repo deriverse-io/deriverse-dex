@@ -3140,8 +3140,8 @@ export class MangoClient {
     slippage: number,
   ): number {
     return side == PerpOrderSide.bid
-      ? price * (1 - slippage)
-      : price * (1 + slippage);
+      ? price * (1 + slippage)
+      : price * (1 - slippage);
   }
 
   public async perpPlaceMarketOrder(

@@ -1,6 +1,6 @@
 {
   "name": "@deriverse/sdk",
-  "version": "0.0.27",
+  "version": "0.0.29",
   "description": "Typescript Client for deriverse program.",
   "repository": "https://github.com/deriverse-io/deriverse-dex",
   "sideEffects": false,
