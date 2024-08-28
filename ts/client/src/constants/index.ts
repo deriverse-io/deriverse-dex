@@ -29,12 +29,13 @@ export const DERIVERSE_ID = {
 export const MANGO_V4_ID = DERIVERSE_ID;
 
 export const DERIVERSE_MAIN_GROUP = new PublicKey(
-  'C3DBQndS83wQGFPWrFob3JsdJAft1CkB6HtpTtWWo8d',
+  // 'C3DBQndS83wQGFPWrFob3JsdJAft1CkB6HtpTtWWo8d', // NO 420
+  'ERQry4TzumLpxa74R3fU3YyEpPFNWqK96Bn8aBEgmrWg', // NO 900
 );
 
 export const MANGO_V4_MAIN_GROUP = DERIVERSE_MAIN_GROUP;
 
-export const DERIVERSE_MAIN_GROUP_NO = 0;
+export const DERIVERSE_MAIN_GROUP_NO = 900;
 
 export const USDC_MINT = new PublicKey(
   '4dcRteBQhtSVewgUEEvSFRjhRZmWohjAAE5VzvT8if8f',
