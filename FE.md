@@ -164,15 +164,15 @@ const positions = await mangoAccount.getPerpPositionsUi(group);
 await client.perpClosePosition(group, mangoAccount, perpMarketIndex);
 ```
 
+```typescript
+const slippage = 0.1; // 10 % 
+await client.perpClosePosition(group, mangoAccount, perpMarketIndex, slippage);
+```
+
 ## Cancel open order
 
 ```typescript
 await client.perpCancelOrder(group, mangoAccount, perpMarketIndex, orderId);
-```
-
-```typescript
-const slippage = 0.1; // 10 % 
-await client.perpClosePosition(group, mangoAccount, perpMarketIndex, slippage);
 ```
 
 ## Get open orders
